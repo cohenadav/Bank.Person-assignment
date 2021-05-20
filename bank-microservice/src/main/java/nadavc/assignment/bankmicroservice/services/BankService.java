@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.OptionalDouble;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -25,54 +26,79 @@ public class BankService {
 
     @Value("${person.ms.basic.url}")
     private String basicUrl;
-    
+
 
     public Person getCostumerDetails(int costumerId) throws URISyntaxException {
-        String uri = basicUrl + "persons/" + costumerId;
-        RequestEntity request = new RequestEntity(HttpMethod.GET, new URI(uri));
-        ResponseEntity<Person> postEntity = restTemplate.exchange( request , Person.class);
-        return postEntity.getBody();
+        return getSpecificPersonFromMicroservice(costumerId);
     }
 
 
     public PersonsDetails getAllCostumer() throws URISyntaxException {
-        String uri = basicUrl + "persons";
-        RequestEntity request = new RequestEntity(HttpMethod.GET, new URI(uri));
-        ResponseEntity<PersonsDetails> postEntity = restTemplate.exchange( request , PersonsDetails.class);
-        return postEntity.getBody();
+        return getAllPersonsFromMicroservice();
     }
 
 
     public PersonsDetails getCostumersFromIsrael() throws URISyntaxException {
-        String uri = basicUrl + "persons";
-        RequestEntity request = new RequestEntity(HttpMethod.GET, new URI(uri));
-        ResponseEntity<PersonsDetails> postEntity = restTemplate.exchange( request , PersonsDetails.class);
-        List<Person> filterdList = postEntity.getBody().getPersonList().stream().filter( new Predicate<Person>() {
-            @Override
-            public boolean test(Person person) {
-                return person.getAddress().getState().equals("Israel");
-            }
-        }).collect(Collectors.toList());
+        PersonsDetails allCostumers = getAllPersonsFromMicroservice();
+        double avgWeight = getAvgWeight(allCostumers.getPersonList());
+        //System.out.println("the avg is "+ avgWeight);
 
-        postEntity.getBody().setPersonList(filterdList);
+        List<Person> aboveAvgWeight = filterCostumersByPredicate(allCostumers.getPersonList(), aboveSpecifecWeight(avgWeight));
+        List<Person> filterdList = getAllCostumersFromSpecificState(aboveAvgWeight, "Israel");
 
-        return postEntity.getBody();
+        allCostumers.setPersonList(filterdList);
+
+        return allCostumers;
     }
 
     public PersonsDetails getCostumersStartsWithAOrK() throws URISyntaxException {
+        PersonsDetails allCostumers = getAllPersonsFromMicroservice();
+        List<Person> filterdList = filterCostumersByPredicate(allCostumers.getPersonList(), FirstLetterPredicate("A"));
+        filterdList.addAll(filterCostumersByPredicate(allCostumers.getPersonList(), FirstLetterPredicate("K")));
+
+        allCostumers.setPersonList(filterdList);
+        return allCostumers;
+    }
+
+
+    /*-------------------------private functions-----------------------*/
+
+    private PersonsDetails getAllPersonsFromMicroservice() throws URISyntaxException {
         String uri = basicUrl + "persons";
         RequestEntity request = new RequestEntity(HttpMethod.GET, new URI(uri));
-        ResponseEntity<PersonsDetails> postEntity = restTemplate.exchange( request , PersonsDetails.class);
-        List<Person> filterdList = postEntity.getBody().getPersonList().stream().filter( new Predicate<Person>() {
-            @Override
-            public boolean test(Person person) {
-                return person.getName().toUpperCase().startsWith("A") || person.getName().toUpperCase().startsWith("K") ;
-            }
-        }).collect(Collectors.toList());
-
-        postEntity.getBody().setPersonList(filterdList);
-
+        ResponseEntity<PersonsDetails> postEntity = restTemplate.exchange(request, PersonsDetails.class);
         return postEntity.getBody();
     }
 
+    private Person getSpecificPersonFromMicroservice(int personId) throws URISyntaxException {
+        String uri = basicUrl + "persons/" + personId;
+        RequestEntity request = new RequestEntity(HttpMethod.GET, new URI(uri));
+        ResponseEntity<Person> postEntity = restTemplate.exchange(request, Person.class);
+        return postEntity.getBody();
+    }
+
+    private List<Person> filterCostumersByPredicate(List<Person> costumers, Predicate<Person> condition) {
+        return costumers.stream().filter(person -> condition.test(person)).collect(Collectors.toList());
+    }
+
+    private Predicate<Person> FirstLetterPredicate(String letter) {
+        return person -> person.getName().toUpperCase().startsWith(letter.toUpperCase());
+
+    }
+
+    private Predicate<Person> aboveSpecifecWeight(double weight) {
+        return person -> person.getWeightInKg() > weight;
+
+    }
+
+    private List<Person> getAllCostumersFromSpecificState(List<Person> costumers,String stateName) {
+        return filterCostumersByPredicate(costumers, p -> p.getAddress().getState().equalsIgnoreCase(stateName));
+    }
+
+    private double getAvgWeight(List<Person> costumers) {
+        int counter = 0;
+        OptionalDouble avg = costumers.stream().mapToInt(p -> p.getWeightInKg()).average();
+
+        return avg.getAsDouble();
+    }
 }
