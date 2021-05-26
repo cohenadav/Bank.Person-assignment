@@ -48,18 +48,18 @@ public class PersonService {
     }
 
 
-    public void addPerson(Person newPerson) {
+    public Person addPerson(Person newPerson) {
         if (isExists(newPerson.getId())) {
             throw new ApiRequestException("Person with Id " + newPerson.getId() + " Alreadey exists");
         }
-        savePerson(newPerson);
+        return savePerson(newPerson);
     }
 
-    public void updatePerson(Person updatedPerson) {
+    public Person updatePerson(Person updatedPerson) {
         if (!isExists(updatedPerson.getId()) ) {
             throw new ApiRequestException("Person with Id " + updatedPerson.getId() + " dose not exists");
         }
-        updateSavedPerson(updatedPerson);
+        return updateSavedPerson(updatedPerson);
     }
 
 
@@ -72,30 +72,23 @@ public class PersonService {
     }
 
 
-    private boolean isExists (int personId) {
-        if (!personRepository.existsById(personId)) {
-            return false;
-        }
-        return true;
-    }
-
-
-
-
     /* -------------- private functions ----------------- */
 
+    private boolean isExists (int personId) {
+        return personRepository.existsById(personId);
+    }
 
     //WIP - add exception handle
     private Person getPersonChecked (int personId) {
         return personRepository.findById(personId).get();
     }
 
-    private void savePerson(Person person) {
-        personRepository.save(person);
+    private Person savePerson(Person person) {
+        return personRepository.save(person);
     }
 
-    private void updateSavedPerson(Person person) {
-        personRepository.save(person);
+    private Person updateSavedPerson(Person person) {
+        return personRepository.save(person);
     }
 
     private PersonsDetails setPersonsList(List<Person> persons) {

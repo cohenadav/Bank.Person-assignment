@@ -32,13 +32,13 @@ public class PersonController {
 
 
     @RequestMapping(method = RequestMethod.POST, value = "/persons/add")
-    public void addPerson(@RequestBody Person person){
-        personService.addPerson(person);
+    public Person addPerson(@RequestBody Person person){
+       return personService.addPerson(person);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/persons/update")
-    public void updatePerson(@RequestBody Person person){
-        personService.updatePerson(person);
+    public Person updatePerson(@RequestBody Person person){
+        return personService.updatePerson(person);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/persons/remove/{id}")
