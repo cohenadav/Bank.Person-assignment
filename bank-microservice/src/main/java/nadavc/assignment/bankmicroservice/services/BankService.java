@@ -28,7 +28,7 @@ public class BankService {
     private String basicUrl;
 
 
-    public Person getCostumerDetails(int costumerId) throws URISyntaxException {
+    public Person getCostumerDetails(String costumerId) throws URISyntaxException {
         return getSpecificPersonFromMicroservice(costumerId);
     }
 
@@ -70,7 +70,7 @@ public class BankService {
         return postEntity.getBody();
     }
 
-    private Person getSpecificPersonFromMicroservice(int personId) throws URISyntaxException {
+    private Person getSpecificPersonFromMicroservice(String personId) throws URISyntaxException {
         String uri = basicUrl + "persons/" + personId;
         RequestEntity request = new RequestEntity(HttpMethod.GET, new URI(uri));
         ResponseEntity<Person> postEntity = restTemplate.exchange(request, Person.class);

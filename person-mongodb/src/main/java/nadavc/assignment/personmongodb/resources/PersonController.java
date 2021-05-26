@@ -21,12 +21,12 @@ public class PersonController {
     }
 
     @RequestMapping("/persons/{id}")
-    public Person getPerson(@PathVariable int id) {
+    public Person getPerson(@PathVariable String id) {
         return personService.getPerson(id);
     }
 
     @RequestMapping("/personslist")
-    public PersonsDetails getPersonsById(@RequestBody int[] personsId) {
+    public PersonsDetails getPersonsById(@RequestBody String[] personsId) {
         return personService.getPersonsById(personsId);
     }
 
@@ -42,7 +42,7 @@ public class PersonController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/persons/remove/{id}")
-    public void deletePerson(@PathVariable int id){
+    public void deletePerson(@PathVariable String id){
         personService.deletePerson(id);
     }
 }

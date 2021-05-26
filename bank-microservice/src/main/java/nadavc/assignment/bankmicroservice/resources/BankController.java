@@ -18,7 +18,7 @@ public class BankController {
     private BankService bankService;
 
     @RequestMapping("/costumers/{id}")
-    public Person getCostumerDetails(@PathVariable int id) throws URISyntaxException {
+    public Person getCostumerDetails(@PathVariable String id) throws URISyntaxException {
         return bankService.getCostumerDetails(id);
     }
 

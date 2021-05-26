@@ -1,7 +1,6 @@
 package nadavc.assignment.bankmicroservice.models;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -11,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class Person {
 
-    private int id;
+    private String id;
     private String name;
     private int age;
     private Gender gender;

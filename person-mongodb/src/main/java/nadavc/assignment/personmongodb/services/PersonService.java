@@ -27,7 +27,7 @@ public class PersonService {
     }
 
 
-    public Person getPerson(int personId) {
+    public Person getPerson(String personId) {
         if (!isExists(personId)) {
             throw new ApiRequestException("Person with Id " + personId + " dose not found");
         }
@@ -35,7 +35,7 @@ public class PersonService {
     }
 
 
-    public PersonsDetails getPersonsById(int[] personsId)  {
+    public PersonsDetails getPersonsById(String[] personsId)  {
         List<Person> persons = new ArrayList<>();
 
         Arrays.stream(personsId).forEach(id -> {
@@ -63,7 +63,7 @@ public class PersonService {
     }
 
 
-    public void deletePerson(int id) {
+    public void deletePerson(String id) {
 
         if (!isExists(id)) {
             throw new ApiRequestException("personId "+ id + " wasn't found");
@@ -74,12 +74,12 @@ public class PersonService {
 
     /* -------------- private functions ----------------- */
 
-    private boolean isExists (int personId) {
+    private boolean isExists (String personId) {
         return personRepository.existsById(personId);
     }
 
     //WIP - add exception handle
-    private Person getPersonChecked (int personId) {
+    private Person getPersonChecked (String personId) {
         return personRepository.findById(personId).get();
     }
 
