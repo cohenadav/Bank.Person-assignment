@@ -25,7 +25,7 @@ public class BankController {
     }
 
     @GetMapping()
-    public PersonsDetails getCostumerDetails() throws URISyntaxException {
+    public PersonsDetails getAllCostumers() throws URISyntaxException {
         return bankService.getAllCostumer();
     }
 
