@@ -63,12 +63,17 @@ public class PersonService {
     }
 
 
-    public void deletePerson(String id) {
+    public String deletePerson(String id) {
 
         if (!isExists(id)) {
             throw new ApiRequestException("personId "+ id + " wasn't found");
         }
         personRepository.deleteById(id);
+
+        if (!isExists(id)) {
+            throw new ApiRequestException("personId "+ id + " Could not be deleted, try again later");
+        }
+        return id;
     }
 
 
