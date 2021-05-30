@@ -70,9 +70,10 @@ public class PersonService {
         }
         personRepository.deleteById(id);
 
-        if (!isExists(id)) {
+/*        if (!isExists(id)) {
             throw new ApiRequestException("personId "+ id + " Could not be deleted, try again later");
         }
+ */
         return id;
     }
 
